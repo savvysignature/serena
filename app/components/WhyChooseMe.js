@@ -13,7 +13,7 @@ export default function WhyChooseMe() {
   ];
 
   return (
-    <section className="pb-20 sm:pb-24 lg:pb-32 bg-linear-to-b from-gray-50 to-white relative overflow-hidden">
+    <section className="pb-20 sm:pb-24 lg:pb-32 bg-peach relative overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 opacity-5">
         <Image
@@ -76,9 +76,9 @@ export default function WhyChooseMe() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex items-start gap-4 bg-white p-6 rounded-lg shadow-md border border-gray-100"
+                  className="flex items-start gap-4 bg-white p-6 rounded-lg shadow-md"
                 >
-                  <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-2 h-2 bg-[#3db99b] rounded-full mt-2 animate-pulse" />
                   <p className="text-lg text-gray-700">{value}</p>
                 </motion.div>
               ))}
@@ -89,10 +89,10 @@ export default function WhyChooseMe() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="bg-indigo-50 p-8 rounded-xl border-l-4 border-indigo-600"
+              className="bg-[#9FD3C7]/10 p-8 rounded-xl border-l-4 border-[#9FD3C7]"
             >
               <p className="text-xl sm:text-2xl text-gray-700 italic font-light">
-                "I help you feel seen, understood, and supported — exactly as you are."
+                &quot;I help you feel seen, understood, and supported — exactly as you are.&quot;
               </p>
             </motion.div>
           </div>

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function Footer() {
   return (
-    <footer className="bg-linear-to-b from-gray-200 to-white/20 border-t border-gray-200">
+    <footer className="bg-peach border-t border-[#9FD3C7]/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <motion.div
@@ -16,7 +16,7 @@ export default function Footer() {
           >
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="text-2xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+              className="text-2xl font-bold text-[#3db99b]"
             >
               <Link href="/">Serena</Link>
             </motion.div>
@@ -44,7 +44,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/"
-                  className="text-gray-600 hover:text-indigo-600 transition-colors text-base"
+                  className="text-gray-600 hover:text-[#3db99b] transition-colors text-base"
                 >
                   Home
                 </Link>
@@ -52,7 +52,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/#about"
-                  className="text-gray-600 hover:text-indigo-600 transition-colors text-base"
+                  className="text-gray-600 hover:text-[#3db99b] transition-colors text-base"
                 >
                   About
                 </Link>
@@ -60,7 +60,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/#services"
-                  className="text-gray-600 hover:text-indigo-600 transition-colors text-base"
+                  className="text-gray-600 hover:text-[#3db99b] transition-colors text-base"
                 >
                   Services
                 </Link>
@@ -77,7 +77,7 @@ export default function Footer() {
           >
             <h4 className="text-lg font-bold text-gray-800 mb-4">Contact</h4>
             <p className="text-gray-600 text-base mb-2">
-              Email: <a href="mailto:psychicscapegoat@gmail.com" className="text-indigo-600 hover:underline font-semibold">psychicscapegoat@gmail.com</a>
+              Email: <a href="mailto:psychicscapegoat@gmail.com" className="text-[#3db99b] hover:underline font-semibold">psychicscapegoat@gmail.com</a>
             </p>
             <p className="text-gray-600 text-base mb-4">
               Available for readings via phone or video call
@@ -88,7 +88,7 @@ export default function Footer() {
           </motion.div>
         </div>
 
-        <div className="border-t border-gray-200 pt-8">
+        <div className="border-t border-[#9FD3C7]/30 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm text-center md:text-left">
               © {new Date().getFullYear()} Serena. All rights reserved.
@@ -102,4 +102,3 @@ export default function Footer() {
     </footer>
   );
 }
-

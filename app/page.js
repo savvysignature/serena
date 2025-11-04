@@ -11,7 +11,7 @@ import CTA from './components/CTA';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen bg-peach">
       <Header />
       <main>
         <Hero />

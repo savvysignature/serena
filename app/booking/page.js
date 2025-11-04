@@ -98,7 +98,7 @@ export default function BookingPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-gray-50 via-white to-gray-50">
+        <div className="min-h-screen bg-peach">
             <Header />
             <main>
                 {/* Hero Intro */}
@@ -111,7 +111,7 @@ export default function BookingPage() {
                             className="object-cover opacity-100"
                             sizes="100vw"
                         />
-                        <div className="absolute inset-0 bg-linear-to-br from-indigo-50/90 via-purple-50/80 to-pink-50/70" />
+                        <div className="absolute inset-0 bg-peach/70" />
                     </div>
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                         <motion.div
@@ -133,7 +133,7 @@ export default function BookingPage() {
                 </section>
 
                 {/* Reading Options */}
-                <section className="py-20 bg-zinc-200">
+                <section className="py-20 bg-peach">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
                             {readingOptions.map((option, index) => (
@@ -144,7 +144,7 @@ export default function BookingPage() {
                                     viewport={{ once: true, margin: '-100px' }}
                                     transition={{ duration: 0.6, delay: index * 0.2 }}
                                     whileHover={{ y: -10, scale: 1.02 }}
-                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-gray-100 group"
+                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-[#9FD3C7]/30 group"
                                 >
                                     <div className="relative h-48 overflow-hidden">
                                         <Image
@@ -159,10 +159,10 @@ export default function BookingPage() {
                                     <div className="p-8">
                                         <div className="mb-4">
                                             <h3 className="text-2xl font-bold text-gray-800">{option.title}</h3>
-                                            <span className="text-indigo-600 font-semibold text-lg inline-block mt-2">{option.price}</span>
+                                            <span className="text-[#3db99b] font-semibold text-lg inline-block mt-2">{option.price}</span>
                                         </div>
                                         <div className="mb-4">
-                                            <span className="inline-block bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+                                            <span className="inline-block bg-[#9FD3C7]/20 text-[#3db99b] border border-[#9FD3C7]/30 px-3 py-1 rounded-full text-sm font-medium">
                                                 {option.duration}
                                             </span>
                                         </div>
@@ -187,7 +187,7 @@ export default function BookingPage() {
                             viewport={{ once: true, margin: '-100px' }}
                             transition={{ duration: 0.8 }}
                             id="booking-form"
-                            className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-violet-100"
+                            className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-[#9FD3C7]/30"
                         >
                             <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
                                 Booking Form
@@ -199,12 +199,12 @@ export default function BookingPage() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     className="text-center py-12"
                                 >
-                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="w-16 h-16 bg-[#9FD3C7]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-[#3db99b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
                                     </div>
-                                    <h3 className="text-2xl font-bold text-indigo-600 mb-2">Thank You!</h3>
+                                    <h3 className="text-2xl font-bold text-[#3db99b] mb-2">Thank You!</h3>
                                     <p className="text-gray-600">
                                         Your booking request has been submitted. I&apos;ll contact you soon to confirm your session.
                                     </p>
@@ -222,7 +222,7 @@ export default function BookingPage() {
                                             required
                                             value={formData.fullName}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
                                         />
                                     </div>
 
@@ -237,7 +237,7 @@ export default function BookingPage() {
                                             required
                                             value={formData.email}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
                                         />
                                     </div>
 
@@ -252,7 +252,7 @@ export default function BookingPage() {
                                             required
                                             value={formData.phone}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
                                         />
                                     </div>
 
@@ -266,7 +266,7 @@ export default function BookingPage() {
                                             required
                                             value={formData.sessionType}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
                                         >
                                             <option value="">Select a session</option>
                                             <option value="30-min-psychic">Psychic Reading (30 minutes) - $80 AUD</option>
@@ -287,7 +287,7 @@ export default function BookingPage() {
                                                 required
                                                 value={formData.preferredDate}
                                                 onChange={handleInputChange}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
                                             />
                                         </div>
 
@@ -302,7 +302,7 @@ export default function BookingPage() {
                                                 required
                                                 value={formData.preferredTime}
                                                 onChange={handleInputChange}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
                                             />
                                         </div>
                                     </div>
@@ -317,7 +317,7 @@ export default function BookingPage() {
                                             required
                                             value={formData.contactMethod}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
                                         >
                                             <option value="">Select contact method</option>
                                             <option value="video">Video Call</option>
@@ -349,7 +349,7 @@ export default function BookingPage() {
                                         type="submit"
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="w-full cursor-pointer bg-linear-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
+                                        className="w-full cursor-pointer bg-[#28c09a] text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:bg-[#28c09a] hover:shadow-xl transition-all"
                                     >
                                         Confirm Booking
                                     </motion.button>
@@ -360,7 +360,7 @@ export default function BookingPage() {
                 </section>
 
                 {/* FAQ Section */}
-                <section className="py-20 bg-linear-to-b from-gray-50 to-white">
+                <section className="py-20 bg-peach">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             initial={{ opacity: 0, y: 50 }}
@@ -381,7 +381,7 @@ export default function BookingPage() {
                                         whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ duration: 0.5, delay: index * 0.1 }}
-                                        className="bg-white p-6 rounded-xl shadow-md border border-gray-100"
+                                        className="bg-white p-6 rounded-xl shadow-md border border-[#9FD3C7]/30"
                                     >
                                         <h3 className="text-xl font-bold text-gray-800 mb-3">{faq.question}</h3>
                                         <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
@@ -393,19 +393,16 @@ export default function BookingPage() {
                 </section>
 
                 {/* Final CTA */}
-                <section className="py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white relative overflow-hidden">
+                <section className="py-20 bg-linear-to-br from-[#28c09a] via-[#28c09a] to-[#f9c339] text-white relative overflow-hidden">
                     <div className="absolute inset-0">
-
-                        {/* Background Image with Overlay */}
-
                         <Image
                             src="https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9OipQeGrxGeFh2PnTIiEsYDlVrQtX4LwzvugS"
                             alt="Background"
                             fill
-                            className="object-cover opacity-100"
+                            className="object-cover opacity-20"
                             sizes="100vw"
                         />
-                        <div className="absolute inset-0 bg-linear-to-br from-indigo-600/10 via-purple-600/90 to-pink-600/40" />
+                        {/* <div className="absolute inset-0 bg-linear-to-br from-[#9FD3C7]/80 via-[#3db99b]/80 to-[#F4E4BC]/60" /> */}
 
                     </div>
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -424,19 +421,19 @@ export default function BookingPage() {
                                     whileHover={{ scale: 1.05, y: -2 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
-                                    <a
+                                    <Link
                                         href="#booking-form"
-                                        className="bg-white text-indigo-600 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all inline-block"
+                                        className="bg-white text-[#3db99b] px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all inline-block"
                                     >
                                         Book Now
-                                    </a>
+                                    </Link>
                                 </motion.div>
                                 <motion.div
                                     whileHover={{ scale: 1.05, y: -2 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
                                     <Link
-                                        href="/#contact"
+                                        href="mailto:psychicscapegoat@gmail.com"
                                         className="bg-transparent text-white border-2 border-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition-all inline-block"
                                     >
                                         Contact Me

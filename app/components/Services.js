@@ -24,7 +24,7 @@ export default function Services() {
   ];
 
   return (
-    <section id="services" className="pb-20 sm:pb-24 lg:pb-32 bg-white">
+    <section id="services" className="pb-20 sm:pb-24 lg:pb-32 bg-peach">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -47,7 +47,7 @@ export default function Services() {
               viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
               whileHover={{ y: -10, scale: 1.02 }}
-              className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-gray-100 group"
+              className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-[#9FD3C7]/30 group"
             >
               <div className="relative h-64 overflow-hidden">
                 <Image
@@ -80,7 +80,7 @@ export default function Services() {
           >
             <Link
               href="/booking"
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all inline-block"
+              className="bg-[#28c09a] text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:bg-[#28c09a] hover:shadow-xl transition-all inline-block"
             >
               View Reading Options
             </Link>

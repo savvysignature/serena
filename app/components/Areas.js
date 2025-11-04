@@ -14,7 +14,7 @@ export default function Areas() {
   ];
 
   return (
-    <section className="py-20 sm:py-24 lg:py-32 bg-linear-to-b from-gray-50 to-white">
+    <section className="py-20 sm:py-24 lg:py-32 bg-peach">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}

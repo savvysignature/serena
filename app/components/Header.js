@@ -21,7 +21,7 @@ export default function Header() {
       animate={{ y: 0 }}
       transition={{ duration: 0.6 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-        ? 'bg-white/95 backdrop-blur-md shadow-md'
+        ? 'bg-peach backdrop-blur-md shadow-md'
         : 'bg-transparent'
         }`}
     >
@@ -29,7 +29,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="text-2xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+            className="text-2xl font-bold text-[#3db99b] hover:text-[#3db9b9] transition-colors"
           >
             <Link href="/">Serena</Link>
           </motion.div>
@@ -38,7 +38,7 @@ export default function Header() {
             <motion.div whileHover={{ y: -2 }}>
               <Link
                 href="/"
-                className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
+                className="text-gray-700 hover:text-[#3db99b] transition-colors font-medium"
               >
                 Home
               </Link>
@@ -46,7 +46,7 @@ export default function Header() {
             <motion.div whileHover={{ y: -2 }}>
               <Link
                 href="/#about"
-                className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
+                className="text-gray-700 hover:text-[#3db99b] transition-colors font-medium"
               >
                 About
               </Link>
@@ -54,7 +54,7 @@ export default function Header() {
             <motion.div whileHover={{ y: -2 }}>
               <Link
                 href="/#services"
-                className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
+                className="text-gray-700 hover:text-[#3db99b] transition-colors font-medium"
               >
                 Services
               </Link>
@@ -62,7 +62,7 @@ export default function Header() {
             {/* <motion.div whileHover={{ y: -2 }}>
               <Link
                 href="/booking"
-                className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
+                className="text-gray-700 hover:text-[#3db99b] transition-colors font-medium"
               >
                 Book a Reading
               </Link>
@@ -70,7 +70,7 @@ export default function Header() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/booking"
-                className="bg-linear-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-full font-medium hover:shadow-lg transition-all"
+                className="bg-[#3db99b] text-white px-6 py-2 rounded-full font-medium hover:bg-[#3db99b] hover:shadow-lg transition-all"
               >
                 Book Now
               </Link>
@@ -119,7 +119,7 @@ function MobileMenu() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-lg border-t z-50"
+          className="absolute top-full left-0 right-0 bg-peach/95 backdrop-blur-md shadow-lg border-t border-[#9FD3C7]/20 z-50"
         >
           <div className="flex flex-col p-4 gap-4">
             <Link
