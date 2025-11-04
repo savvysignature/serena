@@ -52,18 +52,25 @@ export default function BookingPage() {
 
     const readingOptions = [
         {
-            title: 'Tarot Insight Session',
+            title: 'Psychic Reading ',
             duration: '30 minutes',
             description: 'Focused guidance on your current challenges and questions',
-            price: '$XXX',
-            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9A5dcoE6vCq5JbiEBhoZkWTXMxwr9gpeUQn4F',
+            price: '$80 AUD',
+            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9TeeSX7ZMDGFdBKtCJEUqVr6Tz4u1O0ekPlpo',
         },
         {
-            title: 'Deep Intuitive Reading',
+            title: 'Psychic Reading',
             duration: '60 minutes',
             description: 'Full intuitive reading + emotional support and deeper exploration',
-            price: '$XXX',
+            price: '$150 AUD',
             image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9kQ6BiMec0TSLsqAViChKR9j8wBk4fPbnux3J',
+        },
+        {
+            title: 'Spiritual Counselling',
+            duration: '60 minutes',
+            description: 'A safe space to speak openly and be heard. No tarot cards or predictions.',
+            price: '$140 AUD',
+            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9U3aZRqgdQ7SL6u9nmzqaCKBMV8wtF3bXRyWI',
         },
     ];
 
@@ -128,7 +135,7 @@ export default function BookingPage() {
                 {/* Reading Options */}
                 <section className="py-20 bg-zinc-200">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+                        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
                             {readingOptions.map((option, index) => (
                                 <motion.div
                                     key={index}
@@ -147,23 +154,31 @@ export default function BookingPage() {
                                             className="object-cover group-hover:scale-110 transition-transform duration-500"
                                             sizes="(max-width: 768px) 100vw, 50vw"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                                        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
                                     </div>
                                     <div className="p-8">
-                                        <div className="flex justify-between items-start mb-4">
+                                        <div className="mb-4">
                                             <h3 className="text-2xl font-bold text-gray-800">{option.title}</h3>
-                                            <span className="text-indigo-600 font-semibold">{option.price}</span>
+                                            <span className="text-indigo-600 font-semibold text-lg inline-block mt-2">{option.price}</span>
                                         </div>
                                         <div className="mb-4">
                                             <span className="inline-block bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
                                                 {option.duration}
                                             </span>
                                         </div>
-                                        <p className="text-gray-600 leading-relaxed">{option.description}</p>
+                                        <p className="text-gray-600 leading-relaxed mb-4">{option.description}</p>
+                                        {/* {option.disclaimer && (
+                                            <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                                <p className="text-sm text-amber-900 leading-relaxed">
+                                                    <strong className="font-semibold">Disclaimer:</strong> {option.disclaimer}
+                                                </p>
+                                            </div>
+                                        )} */}
                                     </div>
                                 </motion.div>
                             ))}
                         </div>
+
 
                         {/* Booking Form */}
                         <motion.div
@@ -254,8 +269,9 @@ export default function BookingPage() {
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                                         >
                                             <option value="">Select a session</option>
-                                            <option value="30-min">Tarot Insight Session (30 minutes)</option>
-                                            <option value="60-min">Deep Intuitive Reading (60 minutes)</option>
+                                            <option value="30-min-psychic">Psychic Reading (30 minutes) - $80 AUD</option>
+                                            <option value="60-min-psychic">Psychic Reading (60 minutes) - $150 AUD</option>
+                                            <option value="60-min-counselling">Spiritual Counselling (60 minutes) - $140 AUD</option>
                                         </select>
                                     </div>
 
@@ -324,11 +340,16 @@ export default function BookingPage() {
                                         />
                                     </div>
 
+                                    <p className="text-gray-600 text-xs mt-4">
+                                        <strong>Disclaimer:</strong> No tarot will be used and no predictions given. This session will provide a space for you to speak openly and be heard and supported by someone who understands. I offer compassionate insights and observations. My intention is always to help you reconnect with your own inner guidance and power.
+
+                                    </p>
+
                                     <motion.button
                                         type="submit"
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
+                                        className="w-full cursor-pointer bg-linear-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
                                     >
                                         Confirm Booking
                                     </motion.button>

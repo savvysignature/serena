@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function Footer() {
   return (
-    <footer className="bg-linear-to-b from-gray-50 to-white border-t border-gray-200">
+    <footer className="bg-linear-to-b from-gray-200 to-white/20 border-t border-gray-200">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <motion.div
@@ -65,14 +65,6 @@ export default function Footer() {
                   Services
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/booking"
-                  className="text-gray-600 hover:text-indigo-600 transition-colors text-base"
-                >
-                  Book a Reading
-                </Link>
-              </li>
             </ul>
           </motion.div>
 
@@ -85,7 +77,7 @@ export default function Footer() {
           >
             <h4 className="text-lg font-bold text-gray-800 mb-4">Contact</h4>
             <p className="text-gray-600 text-base mb-2">
-              Email: <a href="mailto:serena@gmail.com" className="text-indigo-600 hover:underline font-semibold">serena@gmail.com</a>
+              Email: <a href="mailto:psychicscapegoat@gmail.com" className="text-indigo-600 hover:underline font-semibold">psychicscapegoat@gmail.com</a>
             </p>
             <p className="text-gray-600 text-base mb-4">
               Available for readings via phone or video call

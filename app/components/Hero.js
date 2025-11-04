@@ -48,7 +48,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-lg md:text-xl text-gray-600 mb-10 font-light leading-relaxed"
+              className="text-lg md:text-xl text-gray-600 mb-10 font-light leading-relaxed max-w-[500px]"
             >
               Clairvoyant Tarot Readings • Spiritual Counselling • 25+ Year&apos;s Experience
             </motion.p>
@@ -91,18 +91,18 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="relative"
           >
-            <div className="relative w-full aspect-4/5 max-w-lg mx-auto">
+            <div className="relative w-full max-w-lg mx-auto overflow-hidden">
               {/* Decorative background */}
               <div className="absolute inset-0 bg-linear-to-br from-indigo-200/20 to-purple-200/20 rounded-3xl blur-3xl transform rotate-6" />
 
               {/* Image container */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                className="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white"
+                transition={{ duration: 0.25 }}
+                className="relative rounded-3xl overflow-hidden shadow-2xl"
               >
                 <Image
-                  src="https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr93ThJ841aIH9AMnpOVw7ZaCDX8LTx0buq51cY"
+                  src="https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9yCEMUYHfglqH8ZK6UVJPB329Gk0fbzOdRTvs"
                   alt="Serena - Clairvoyant Tarot Reader"
                   width={600}
                   height={550}

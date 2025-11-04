@@ -9,7 +9,7 @@ export default function Services() {
     {
       title: 'Psychic Tarot Readings',
       description: 'Gain clarity on current challenges, future energies, relationships & life paths',
-      image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9A5dcoE6vCq5JbiEBhoZkWTXMxwr9gpeUQn4F',
+      image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9TeeSX7ZMDGFdBKtCJEUqVr6Tz4u1O0ekPlpo',
     },
     {
       title: 'Spiritual Guidance & Soul Support',
