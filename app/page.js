@@ -20,7 +20,7 @@ export default function Home() {
         <Services />
         {/* <WhyChooseMe /> */}
         {/* <Areas /> */}
-        <VideoClips />
+        {/* <VideoClips /> */}
         <CTA />
       </main>
       <Footer />
