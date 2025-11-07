@@ -8,7 +8,7 @@ export default function Services() {
   const services = [
     {
       title: 'Psychic Tarot Readings',
-      description: 'Gain clarity on current challenges, future energies, relationships & life paths',
+      description: 'Gain clarity on the current challenges, future energies, relationships & life paths',
       image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9TeeSX7ZMDGFdBKtCJEUqVr6Tz4u1O0ekPlpo',
     },
     {
@@ -47,9 +47,9 @@ export default function Services() {
               viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
               whileHover={{ y: -10, scale: 1.02 }}
-              className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-[#9FD3C7]/30 group"
+              className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-mint/30 group"
             >
-              <div className="relative h-64 overflow-hidden">
+              {/* <div className="relative h-64 overflow-hidden">
                 <Image
                   src={service.image}
                   alt={service.title}
@@ -58,16 +58,16 @@ export default function Services() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              </div>
+              </div> */}
               <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">{service.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{service.description}</p>
+                <h3 className="text-2xl font-bold text-[#28c09a] mb-4 text-center">{service.title}</h3>
+                <p className="text-gray-600 leading-relaxed text-center">{service.description}</p>
               </div>
             </motion.div>
           ))}
         </div>
 
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -85,7 +85,7 @@ export default function Services() {
               View Reading Options
             </Link>
           </motion.div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );

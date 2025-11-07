@@ -102,7 +102,7 @@ export default function Hero() {
                 className="relative rounded-3xl overflow-hidden shadow-2xl"
               >
                 <Image
-                  src="https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9yCEMUYHfglqH8ZK6UVJPB329Gk0fbzOdRTvs"
+                  src="https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9rYTeHvBezPoNA5s97FkDIRytxpKb8vXqfTEU"
                   alt="Serena - Clairvoyant Tarot Reader"
                   width={600}
                   height={550}

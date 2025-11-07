@@ -31,7 +31,7 @@ export default function Header() {
             whileHover={{ scale: 1.05 }}
             className="text-2xl font-bold text-[#3db99b] hover:text-[#3db9b9] transition-colors"
           >
-            <Link href="/">Serena</Link>
+            <Link href="/">Serena Day</Link>
           </motion.div>
 
           <div className="hidden md:flex items-center gap-8">

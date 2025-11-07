@@ -18,7 +18,7 @@ export default function Footer() {
               whileHover={{ scale: 1.05 }}
               className="text-2xl font-bold text-[#3db99b]"
             >
-              <Link href="/">Serena</Link>
+              <Link href="/">Serena Day</Link>
             </motion.div>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -80,18 +80,18 @@ export default function Footer() {
               Email: <a href="mailto:psychicscapegoat@gmail.com" className="text-[#3db99b] hover:underline font-semibold">psychicscapegoat@gmail.com</a>
             </p>
             <p className="text-gray-600 text-base mb-4">
-              Available for readings via phone or video call
+            Available for readings or counselling sessions via phone call.
             </p>
-            <p className="text-gray-600">
+            {/* <p className="text-gray-600">
               Based in Queensland, Australia
-            </p>
+            </p> */}
           </motion.div>
         </div>
 
         <div className="border-t border-[#9FD3C7]/30 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm text-center md:text-left">
-              © {new Date().getFullYear()} Serena. All rights reserved.
+              © {new Date().getFullYear()} Serena Day. All rights reserved.
             </p>
             <p className="text-gray-500 text-xs text-center md:text-right">
               {/* Readings are for entertainment and guidance purposes only. */}

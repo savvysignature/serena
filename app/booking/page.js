@@ -56,21 +56,21 @@ export default function BookingPage() {
             duration: '30 minutes',
             description: 'Focused guidance on your current challenges and questions',
             price: '$80 AUD',
-            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9TeeSX7ZMDGFdBKtCJEUqVr6Tz4u1O0ekPlpo',
+            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9qunkBxRo910byKfepAWMI45wBLUOcJFxh3lG',
         },
         {
             title: 'Psychic Reading',
             duration: '60 minutes',
             description: 'Full intuitive reading + emotional support and deeper exploration',
             price: '$150 AUD',
-            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9kQ6BiMec0TSLsqAViChKR9j8wBk4fPbnux3J',
+            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9CVAlTmEYPpn5hrM0D8gUdc17Ooyl6fZaCvjW',
         },
         {
             title: 'Spiritual Counselling',
             duration: '60 minutes',
-            description: 'A safe space to speak openly and be heard. No tarot cards or predictions.',
+            description: 'A safe space to speak openly and be heard. No tarot cards or predictions',
             price: '$140 AUD',
-            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9U3aZRqgdQ7SL6u9nmzqaCKBMV8wtF3bXRyWI',
+            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9jOqvwAUmDqtyS0rVoKQbgTLw4FIcUu7deiz3',
         },
     ];
 
@@ -124,9 +124,9 @@ export default function BookingPage() {
                                 Book Your Reading
                             </h1>
                             <p className="text-lg sm:text-xl text-gray-600">
-                                All readings are offered via phone or video call.
+                                Sessions are offered via phone call.
                                 <br />
-                                Choose the session that feels best for you.
+                                Please choose the option that feels right for you.
                             </p>
                         </motion.div>
                     </div>
@@ -144,9 +144,9 @@ export default function BookingPage() {
                                     viewport={{ once: true, margin: '-100px' }}
                                     transition={{ duration: 0.6, delay: index * 0.2 }}
                                     whileHover={{ y: -10, scale: 1.02 }}
-                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-[#9FD3C7]/30 group"
+                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-mint/30 group"
                                 >
-                                    <div className="relative h-48 overflow-hidden">
+                                    <div className="relative h-60 overflow-hidden">
                                         <Image
                                             src={option.image}
                                             alt={option.title}

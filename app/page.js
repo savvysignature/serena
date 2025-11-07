@@ -17,8 +17,8 @@ export default function Home() {
         <Hero />
         <About />
         <Services />
-        <WhyChooseMe />
-        <Areas />
+        {/* <WhyChooseMe /> */}
+        {/* <Areas /> */}
         <CTA />
       </main>
       <Footer />
