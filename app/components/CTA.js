@@ -27,7 +27,7 @@ export default function CTA() {
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className ="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 relative inline-block px-8 py-4 rounded-2xl bg-linear-to-r from-pink-500 from-40%  to-amber-500 text-transparent bg-clip-text">
+            <h2 className ="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 relative inline-block px-8 py-4 rounded-2xl bg-linear-to-r from-pink-500 from-20%  to-amber-500 text-transparent bg-clip-text">
               {/* <span className="relative z-10 text-transparent drop-shadow-lg"> */}
               Ready for Guidance on Your Path?
               {/* </span> */}

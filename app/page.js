@@ -7,6 +7,7 @@ import About from './components/About';
 import Services from './components/Services';
 import WhyChooseMe from './components/WhyChooseMe';
 import Areas from './components/Areas';
+import VideoClips from './components/VideoClips';
 import CTA from './components/CTA';
 
 export default function Home() {
@@ -19,6 +20,7 @@ export default function Home() {
         <Services />
         {/* <WhyChooseMe /> */}
         {/* <Areas /> */}
+        <VideoClips />
         <CTA />
       </main>
       <Footer />
