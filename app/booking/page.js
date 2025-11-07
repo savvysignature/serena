@@ -1,9 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Select from 'react-select';
+import { countries } from 'countries-list';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -13,6 +15,8 @@ export default function BookingPage() {
         email: '',
         phone: '',
         sessionType: '',
+        country: null,
+        timezone: '',
         preferredDate: '',
         preferredTime: '',
         contactMethod: '',
@@ -20,6 +24,148 @@ export default function BookingPage() {
     });
 
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Country to timezone mapping (common timezones for major countries)
+    const countryTimezones = useMemo(() => ({
+        'AU': 'Australia/Brisbane', // Australia (Queensland)
+        'NZ': 'Pacific/Auckland', // New Zealand
+        'US': 'America/New_York', // United States (Eastern)
+        'GB': 'Europe/London', // United Kingdom
+        'CA': 'America/Toronto', // Canada (Eastern)
+        'IN': 'Asia/Kolkata', // India
+        'JP': 'Asia/Tokyo', // Japan
+        'CN': 'Asia/Shanghai', // China
+        'DE': 'Europe/Berlin', // Germany
+        'FR': 'Europe/Paris', // France
+        'IT': 'Europe/Rome', // Italy
+        'ES': 'Europe/Madrid', // Spain
+        'BR': 'America/Sao_Paulo', // Brazil
+        'MX': 'America/Mexico_City', // Mexico
+        'ZA': 'Africa/Johannesburg', // South Africa
+        'AE': 'Asia/Dubai', // UAE
+        'SG': 'Asia/Singapore', // Singapore
+    }), []);
+
+    // Convert time from user's timezone to Australia/Queensland (Brisbane) timezone
+    const convertToAustraliaTime = (date, time, userTimezone) => {
+        if (!date || !time || !userTimezone) return null;
+
+        try {
+            // Parse the date and time
+            const [year, month, day] = date.split('-').map(Number);
+            const [hours, minutes] = time.split(':').map(Number);
+
+            // Create a date string in ISO format
+            const dateTimeString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
+            
+            // Create a date object - this will be in the browser's local timezone
+            // We need to interpret this as being in the user's selected timezone
+            // and convert it to Australia/Queensland (Brisbane)
+            
+            // Step 1: Create a date assuming the input is in user's timezone
+            // We'll use a workaround: create the date and then adjust based on timezone offsets
+            
+            // Get the current timezone offset for the user's timezone on this date
+            const testDate = new Date(dateTimeString);
+            const userTimeStr = testDate.toLocaleString('en-US', {
+                timeZone: userTimezone,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            });
+            
+            // Parse the formatted string to get the actual time components
+            const userMatch = userTimeStr.match(/(\d+)\/(\d+)\/(\d+),?\s+(\d+):(\d+):(\d+)/);
+            if (!userMatch) throw new Error('Failed to parse user time');
+            
+            // Create a date object representing the same moment in UTC
+            // The difference between what we created and what the timezone shows gives us the offset
+            const userLocal = new Date(
+                parseInt(userMatch[3]),
+                parseInt(userMatch[1]) - 1,
+                parseInt(userMatch[2]),
+                parseInt(userMatch[4]),
+                parseInt(userMatch[5]),
+                parseInt(userMatch[6])
+            );
+            
+            // Calculate the offset
+            const offsetMs = testDate.getTime() - userLocal.getTime();
+            
+            // Now create the actual date from user's input, adjusted for their timezone
+            const userInputDate = new Date(
+                year,
+                month - 1,
+                day,
+                hours,
+                minutes
+            );
+            
+            // Adjust to account for timezone
+            const utcEquivalent = new Date(userInputDate.getTime() - offsetMs);
+            
+            // Now format this in Australia/Queensland (Brisbane) timezone
+            const ausFormatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Australia/Brisbane',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+            });
+            
+            const ausFormatted = ausFormatter.format(utcEquivalent);
+            const ausMatch = ausFormatted.match(/(\d+):(\d+)\s*(AM|PM)/i);
+            
+            if (ausMatch) {
+                return `${ausMatch[1]}:${ausMatch[2]} ${ausMatch[3].toUpperCase()}`;
+            }
+            
+            // Fallback formatting
+            const ausParts = ausFormatter.formatToParts(utcEquivalent);
+            const ausHour = parseInt(ausParts.find(p => p.type === 'hour')?.value || '0');
+            const ausMinute = parseInt(ausParts.find(p => p.type === 'minute')?.value || '0');
+            const ausPeriod = ausParts.find(p => p.type === 'dayPeriod')?.value?.toUpperCase() || '';
+            
+            const hours12 = ausHour % 12 || 12;
+            const minutes12 = String(ausMinute).padStart(2, '0');
+            const ampm = ausPeriod || (ausHour >= 12 ? 'PM' : 'AM');
+            
+            return `${hours12}:${minutes12} ${ampm}`;
+        } catch (error) {
+            console.error('Error converting time:', error);
+            // Fallback: return the time as-is with AM/PM
+            const [hours, minutes] = time.split(':').map(Number);
+            const hours12 = hours % 12 || 12;
+            const minutes12 = String(minutes).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            return `${hours12}:${minutes12} ${ampm}`;
+        }
+    };
+
+    // Format time in AM/PM
+    const formatTimeAMPM = (timeString) => {
+        if (!timeString) return '';
+        const [hours, minutes] = timeString.split(':').map(Number);
+        const hours12 = hours % 12 || 12;
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
+    };
+
+
+
+    // Convert countries object to array for react-select
+    const countryOptions = useMemo(() => {
+        return Object.entries(countries).map(([code, country]) => ({
+            value: code,
+            label: country.name,
+            timezone: countryTimezones[code] || 'UTC',
+        })).sort((a, b) => a.label.localeCompare(b.label));
+    }, [countryTimezones]);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -29,30 +175,115 @@ export default function BookingPage() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSessionTypeChange = (selectedOption) => {
+        setFormData(prev => ({
+            ...prev,
+            sessionType: selectedOption?.value,
+        }));
+    };
+
+    const handleCountryChange = (selectedOption) => {
+        const selectedCountry = countryOptions.find(c => c.value === selectedOption?.value);
+        setFormData(prev => ({
+            ...prev,
+            country: selectedOption,
+            timezone: selectedCountry?.timezone || '',
+            preferredTime: '', // Reset time when country changes
+        }));
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Here you would typically send the data to a backend
-        console.log('Booking submitted:', formData);
-        setIsSubmitted(true);
-        // Reset form after 3 seconds
-        setTimeout(() => {
-            setIsSubmitted(false);
-            setFormData({
-                fullName: '',
-                email: '',
-                phone: '',
-                sessionType: '',
-                preferredDate: '',
-                preferredTime: '',
-                contactMethod: '',
-                message: '',
+
+        // Validate country is selected
+        if (!formData.country) {
+            alert('Please select a country');
+            return;
+        }
+
+        // Validate time is selected
+        if (!formData.preferredTime) {
+            alert('Please select a preferred time');
+            return;
+        }
+
+        // Get selected country timezone
+        const selectedCountry = countryOptions.find(c => c.value === formData.country?.value);
+        const userTimezone = selectedCountry?.timezone || 'UTC';
+
+        // Convert time to Australia/Queensland (Brisbane) timezone
+        const australiaTime = convertToAustraliaTime(
+            formData.preferredDate,
+            formData.preferredTime,
+            userTimezone
+        );
+
+        // Prepare data to send
+        const bookingData = {
+            fullName: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            sessionType: formData.sessionType,
+            country: formData.country,
+            timezone: formData.timezone,
+            preferredDate: formData.preferredDate,
+            preferredTime: formData.preferredTime,
+            userTimezone: userTimezone,
+            userTime: formatTimeAMPM(formData.preferredTime),
+            australiaTime: australiaTime,
+            australiaTimezone: 'Australia/Brisbane',
+            message: formData.message,
+        };
+
+        setIsLoading(true);
+        
+        try {
+            // Send booking data to API
+            const response = await fetch('/api/booking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData),
             });
-        }, 3000);
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to submit booking');
+            }
+
+            // Success - show success message
+            setIsSubmitted(true);
+            setIsLoading(false);
+            
+            // Reset form after 3 seconds
+            setTimeout(() => {
+                setIsSubmitted(false);
+                setFormData({
+                    fullName: '',
+                    email: '',
+                    phone: '',
+                    sessionType: '',
+                    country: null,
+                    timezone: '',
+                    preferredDate: '',
+                    preferredTime: '',
+                    contactMethod: '',
+                    message: '',
+                });
+            }, 3000);
+        } catch (error) {
+            console.error('Error submitting booking:', error);
+            setIsLoading(false);
+            alert('Failed to submit booking. Please try again or contact us directly.');
+        }
     };
 
     const readingOptions = [
         {
             title: 'Psychic Reading ',
+            value: '30-min-psychic',
             duration: '30 minutes',
             description: 'Focused guidance on your current challenges and questions',
             price: '$80 AUD',
@@ -60,6 +291,7 @@ export default function BookingPage() {
         },
         {
             title: 'Psychic Reading',
+            value: '60-min-psychic',
             duration: '60 minutes',
             description: 'Full intuitive reading + emotional support and deeper exploration',
             price: '$150 AUD',
@@ -67,12 +299,22 @@ export default function BookingPage() {
         },
         {
             title: 'Spiritual Counselling',
+            value: '60-min-counselling',
             duration: '60 minutes',
             description: 'A safe space to speak openly and be heard. No tarot cards or predictions',
             price: '$140 AUD',
             image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9jOqvwAUmDqtyS0rVoKQbgTLw4FIcUu7deiz3',
         },
     ];
+
+
+    const sessionTypeOptions = useMemo(() => {
+        return readingOptions ? readingOptions.map((option, index) => ({
+            key: index,
+            value: option.value,
+            label: option.title + ' - ' + option.duration,
+        })) : [];
+    }, [readingOptions]);
 
     const faqs = [
         {
@@ -256,24 +498,66 @@ export default function BookingPage() {
                                         />
                                     </div>
 
-                                    <div>
-                                        <label htmlFor="sessionType" className="block text-sm font-medium text-gray-700 mb-2">
-                                            Session Type *
-                                        </label>
-                                        <select
-                                            id="sessionType"
-                                            name="sessionType"
-                                            required
-                                            value={formData.sessionType}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
-                                        >
-                                            <option value="">Select a session</option>
-                                            <option value="30-min-psychic">Psychic Reading (30 minutes) - $80 AUD</option>
-                                            <option value="60-min-psychic">Psychic Reading (60 minutes) - $150 AUD</option>
-                                            <option value="60-min-counselling">Spiritual Counselling (60 minutes) - $140 AUD</option>
-                                        </select>
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label htmlFor="sessionType" className="block text-sm font-medium text-gray-700 mb-2">
+                                                Session Type *
+                                            </label>
+                                            <Select
+                                                id="sessionType"
+                                                name="sessionType"
+                                                required
+                                                value={sessionTypeOptions.find(option => option.value === formData.sessionType)}
+                                                onChange={handleSessionTypeChange}
+                                                options={sessionTypeOptions}
+                                                placeholder="Select a session type"
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                            />
+
+                                        </div>
+                                        <div>
+                                            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                                                Country *
+                                            </label>
+                                            <Select
+                                                id="country"
+                                                name="country"
+                                                required
+                                                value={formData.country}
+                                                onChange={handleCountryChange}
+                                                options={countryOptions}
+                                                placeholder="Select a country"
+                                                isSearchable
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                styles={{
+                                                    control: (base) => ({
+                                                        ...base,
+                                                        minHeight: '48px',
+                                                        borderColor: '#d1d5db',
+                                                        '&:hover': {
+                                                            borderColor: '#9FD3C7',
+                                                        },
+                                                    }),
+                                                    option: (base, state) => ({
+                                                        ...base,
+                                                        backgroundColor: state.isSelected
+                                                            ? '#9FD3C7'
+                                                            : state.isFocused
+                                                                ? '#9FD3C7/20'
+                                                                : 'white',
+                                                        color: state.isSelected ? 'white' : '#1f2937',
+                                                        '&:hover': {
+                                                            backgroundColor: '#9FD3C7/30',
+                                                        },
+                                                    }),
+                                                }}
+                                            />
+                                        </div>
                                     </div>
+
+
 
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         <div>
@@ -293,20 +577,26 @@ export default function BookingPage() {
 
                                         <div>
                                             <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 mb-2">
-                                                Preferred Time *
+                                                Preferred Time {formData.country && formData.timezone && `(${formData.timezone})`} *
                                             </label>
-                                            <input
-                                                type="time"
-                                                id="preferredTime"
-                                                name="preferredTime"
-                                                required
-                                                value={formData.preferredTime}
-                                                onChange={handleInputChange}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
-                                            />
+                                            {formData.country ? (
+                                                <input
+                                                    type="time"
+                                                    id="preferredTime"
+                                                    name="preferredTime"
+                                                    required
+                                                    value={formData.preferredTime}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
+                                                />
+                                            ) : (
+                                                <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-400">
+                                                    Please select a country first
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-
+                                    {/* 
                                     <div>
                                         <label htmlFor="contactMethod" className="block text-sm font-medium text-gray-700 mb-2">
                                             Video or Phone *
@@ -323,7 +613,7 @@ export default function BookingPage() {
                                             <option value="video">Video Call</option>
                                             <option value="phone">Phone Call</option>
                                         </select>
-                                    </div>
+                                    </div> */}
 
                                     <div>
                                         <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
@@ -339,19 +629,50 @@ export default function BookingPage() {
                                             placeholder="Share any questions or topics you'd like to explore during your reading..."
                                         />
                                     </div>
-
+                                    {/* 
                                     <p className="text-gray-600 text-xs mt-4">
                                         <strong>Disclaimer:</strong> No tarot will be used and no predictions given. This session will provide a space for you to speak openly and be heard and supported by someone who understands. I offer compassionate insights and observations. My intention is always to help you reconnect with your own inner guidance and power.
 
-                                    </p>
+                                    </p> */}
 
                                     <motion.button
                                         type="submit"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="w-full cursor-pointer bg-[#28c09a] text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:bg-[#28c09a] hover:shadow-xl transition-all"
+                                        disabled={isLoading}
+                                        whileHover={!isLoading ? { scale: 1.05 } : {}}
+                                        whileTap={!isLoading ? { scale: 0.95 } : {}}
+                                        className={`w-full px-8 py-4 rounded-full font-semibold text-lg shadow-lg transition-all flex items-center justify-center gap-3 ${
+                                            isLoading
+                                                ? 'bg-[#28c09a]/70 text-white cursor-not-allowed'
+                                                : 'bg-[#28c09a] text-white cursor-pointer hover:bg-[#28c09a] hover:shadow-xl'
+                                        }`}
                                     >
-                                        Confirm Booking
+                                        {isLoading ? (
+                                            <>
+                                                <svg
+                                                    className="animate-spin h-5 w-5 text-white"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    ></circle>
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                    ></path>
+                                                </svg>
+                                                <span>Submitting...</span>
+                                            </>
+                                        ) : (
+                                            'Confirm Booking'
+                                        )}
                                     </motion.button>
                                 </form>
                             )}
@@ -360,7 +681,7 @@ export default function BookingPage() {
                 </section>
 
                 {/* FAQ Section */}
-                <section className="py-20 bg-peach">
+                {/* <section className="py-20 bg-peach">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             initial={{ opacity: 0, y: 50 }}
@@ -390,10 +711,10 @@ export default function BookingPage() {
                             </div>
                         </motion.div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* Final CTA */}
-                <section className="py-20 bg-linear-to-br from-[#28c09a] via-[#28c09a] to-[#f9c339] text-white relative overflow-hidden">
+                <section className="py-20 bg-linear-to-tl from-pink-500/30 to-amber-500/30 text-white relative overflow-hidden">
                     <div className="absolute inset-0">
                         <Image
                             src="https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9OipQeGrxGeFh2PnTIiEsYDlVrQtX4LwzvugS"
@@ -423,7 +744,7 @@ export default function BookingPage() {
                                 >
                                     <Link
                                         href="#booking-form"
-                                        className="bg-white text-[#3db99b] px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all inline-block"
+                                        className="bg-white text-pink-500 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all inline-block"
                                     >
                                         Book Now
                                     </Link>
@@ -434,7 +755,7 @@ export default function BookingPage() {
                                 >
                                     <Link
                                         href="mailto:psychicscapegoat@gmail.com"
-                                        className="bg-transparent text-white border-2 border-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition-all inline-block"
+                                        className="bg-transparent text-pink-500 border-2 border-pink-500 px-8 py-4 rounded-full font-semibold text-lg hover:bg-pink-500/10 transition-all inline-block"
                                     >
                                         Contact Me
                                     </Link>

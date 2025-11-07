@@ -35,7 +35,7 @@ export default function About() {
                   alt="Serena Day - About"
                   width={600}
                   height={550}
-                  className="object-contain h-[650px] object-top group-hover:scale-105 transition-transform duration-500"
+                  className="object-contain h-[650px] max-md:h-[440px] object-top group-hover:scale-105 transition-transform duration-500"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent" />
@@ -100,9 +100,6 @@ export default function About() {
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                <div className="absolute bottom-0 w-full text-center p-4">
-                  <p className="text-white text-base font-medium">Sitting on the Mountain</p>
-                </div>
               </motion.div>
 
               {/* Full Story Text - Left Side */}
@@ -185,9 +182,6 @@ export default function About() {
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                <div className="absolute bottom-0 w-full text-center p-4">
-                  <p className="text-white text-base font-medium">Swimming in the Lake</p>
-                </div>
               </motion.div>
             </div>
           </div>
