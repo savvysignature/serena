@@ -1,13 +1,184 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Select from 'react-select';
 import { countries } from 'countries-list';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+
+const BRISBANE_TIMEZONE = 'Australia/Brisbane';
+
+const AVAILABILITY_SCHEDULE = Object.freeze({
+    Thursday: [
+        { start: '06:30', end: '11:30' },
+    ],
+    Friday: [
+        { start: '06:30', end: '11:30' },
+    ],
+    Sunday: [
+        { start: '06:30', end: '11:30' },
+        { start: '14:00', end: '17:00' },
+    ],
+});
+
+const TIME_INTERVAL_MINUTES = 30;
+
+const generateTimeSlots = (start, end, interval = TIME_INTERVAL_MINUTES) => {
+    const toMinutes = (timeString) => {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;
+    };
+
+    const slots = [];
+    const startMinutes = toMinutes(start);
+    const endMinutes = toMinutes(end);
+
+    for (let minutes = startMinutes; minutes <= endMinutes; minutes += interval) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        slots.push(`${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`);
+    }
+
+    return slots;
+};
+
+const getWeekdayInTimezone = (dateString, timezone) => {
+    if (!dateString) return null;
+    const [year, month, day] = dateString.split('-').map(Number);
+    const utcDate = new Date(Date.UTC(year, month - 1, day));
+    return new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        weekday: 'long',
+    }).format(utcDate);
+};
+
+const formatDateInTimezone = (dateString, timezone) => {
+    if (!dateString) return '';
+    const [year, month, day] = dateString.split('-').map(Number);
+    const utcDate = new Date(Date.UTC(year, month - 1, day));
+    return new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+    }).format(utcDate);
+};
+
+const formatTimeAMPM = (timeString) => {
+    if (!timeString) return '';
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const hours12 = hours % 12 || 12;
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
+};
+
+const convertTimeBetweenTimezones = (date, time, fromTimezone, toTimezone) => {
+    if (!date || !time || !fromTimezone || !toTimezone) return null;
+
+    try {
+        const [year, month, day] = date.split('-').map(Number);
+        const [hours, minutes] = time.split(':').map(Number);
+
+        const dateTimeString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
+        const baseDate = new Date(dateTimeString);
+
+        const sourceTimeStr = baseDate.toLocaleString('en-US', {
+            timeZone: fromTimezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        });
+
+        const match = sourceTimeStr.match(/(\d+)\/(\d+)\/(\d+),?\s+(\d+):(\d+):(\d+)/);
+        if (!match) throw new Error('Failed to parse source time');
+
+        const sourceDate = new Date(
+            parseInt(match[3], 10),
+            parseInt(match[1], 10) - 1,
+            parseInt(match[2], 10),
+            parseInt(match[4], 10),
+            parseInt(match[5], 10),
+            parseInt(match[6], 10)
+        );
+
+        const offsetMs = baseDate.getTime() - sourceDate.getTime();
+
+        const sourceInputDate = new Date(year, month - 1, day, hours, minutes);
+        const utcEquivalent = new Date(sourceInputDate.getTime() - offsetMs);
+
+        const amPmFormatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: toTimezone,
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        });
+
+        const twentyFourFormatter = new Intl.DateTimeFormat('en-GB', {
+            timeZone: toTimezone,
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+
+        const displayDateFormatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: toTimezone,
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+        });
+
+        const isoDateFormatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone: toTimezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        });
+
+        return {
+            amPm: amPmFormatter.format(utcEquivalent).toUpperCase(),
+            twentyFour: twentyFourFormatter.format(utcEquivalent),
+            displayDate: displayDateFormatter.format(utcEquivalent),
+            isoDate: isoDateFormatter.format(utcEquivalent),
+        };
+    } catch (error) {
+        console.error('Error converting time between timezones:', error);
+        return null;
+    }
+};
+
+const READING_OPTIONS = [
+    {
+        title: 'Psychic Reading ',
+        value: '30-min-psychic',
+        duration: '30 minutes',
+        description: 'Focused guidance on your current challenges and questions',
+        price: '$80 AUD',
+        image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9qunkBxRo910byKfepAWMI45wBLUOcJFxh3lG',
+    },
+    {
+        title: 'Psychic Reading',
+        value: '60-min-psychic',
+        duration: '60 minutes',
+        description: 'Full intuitive reading + emotional support and deeper exploration',
+        price: '$150 AUD',
+        image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9CVAlTmEYPpn5hrM0D8gUdc17Ooyl6fZaCvjW',
+    },
+    {
+        title: 'Spiritual Counselling',
+        value: '60-min-counselling',
+        duration: '60 minutes',
+        description: 'A safe space to speak openly and be heard. No tarot cards or predictions',
+        price: '$140 AUD',
+        image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9jOqvwAUmDqtyS0rVoKQbgTLw4FIcUu7deiz3',
+    },
+];
 
 export default function BookingPage() {
     const [formData, setFormData] = useState({
@@ -25,10 +196,11 @@ export default function BookingPage() {
 
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedTimeOption, setSelectedTimeOption] = useState(null);
 
     // Country to timezone mapping (common timezones for major countries)
     const countryTimezones = useMemo(() => ({
-        'AU': 'Australia/Brisbane', // Australia (Queensland)
+        'AU': BRISBANE_TIMEZONE, // Australia (Queensland)
         'NZ': 'Pacific/Auckland', // New Zealand
         'US': 'America/New_York', // United States (Eastern)
         'GB': 'Europe/London', // United Kingdom
@@ -52,107 +224,16 @@ export default function BookingPage() {
         if (!date || !time || !userTimezone) return null;
 
         try {
-            // Parse the date and time
-            const [year, month, day] = date.split('-').map(Number);
-            const [hours, minutes] = time.split(':').map(Number);
-
-            // Create a date string in ISO format
-            const dateTimeString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
-            
-            // Create a date object - this will be in the browser's local timezone
-            // We need to interpret this as being in the user's selected timezone
-            // and convert it to Australia/Queensland (Brisbane)
-            
-            // Step 1: Create a date assuming the input is in user's timezone
-            // We'll use a workaround: create the date and then adjust based on timezone offsets
-            
-            // Get the current timezone offset for the user's timezone on this date
-            const testDate = new Date(dateTimeString);
-            const userTimeStr = testDate.toLocaleString('en-US', {
-                timeZone: userTimezone,
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false,
-            });
-            
-            // Parse the formatted string to get the actual time components
-            const userMatch = userTimeStr.match(/(\d+)\/(\d+)\/(\d+),?\s+(\d+):(\d+):(\d+)/);
-            if (!userMatch) throw new Error('Failed to parse user time');
-            
-            // Create a date object representing the same moment in UTC
-            // The difference between what we created and what the timezone shows gives us the offset
-            const userLocal = new Date(
-                parseInt(userMatch[3]),
-                parseInt(userMatch[1]) - 1,
-                parseInt(userMatch[2]),
-                parseInt(userMatch[4]),
-                parseInt(userMatch[5]),
-                parseInt(userMatch[6])
-            );
-            
-            // Calculate the offset
-            const offsetMs = testDate.getTime() - userLocal.getTime();
-            
-            // Now create the actual date from user's input, adjusted for their timezone
-            const userInputDate = new Date(
-                year,
-                month - 1,
-                day,
-                hours,
-                minutes
-            );
-            
-            // Adjust to account for timezone
-            const utcEquivalent = new Date(userInputDate.getTime() - offsetMs);
-            
-            // Now format this in Australia/Queensland (Brisbane) timezone
-            const ausFormatter = new Intl.DateTimeFormat('en-US', {
-                timeZone: 'Australia/Brisbane',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true,
-            });
-            
-            const ausFormatted = ausFormatter.format(utcEquivalent);
-            const ausMatch = ausFormatted.match(/(\d+):(\d+)\s*(AM|PM)/i);
-            
-            if (ausMatch) {
-                return `${ausMatch[1]}:${ausMatch[2]} ${ausMatch[3].toUpperCase()}`;
+            const converted = convertTimeBetweenTimezones(date, time, userTimezone, BRISBANE_TIMEZONE);
+            if (converted?.amPm) {
+                return converted.amPm;
             }
-            
-            // Fallback formatting
-            const ausParts = ausFormatter.formatToParts(utcEquivalent);
-            const ausHour = parseInt(ausParts.find(p => p.type === 'hour')?.value || '0');
-            const ausMinute = parseInt(ausParts.find(p => p.type === 'minute')?.value || '0');
-            const ausPeriod = ausParts.find(p => p.type === 'dayPeriod')?.value?.toUpperCase() || '';
-            
-            const hours12 = ausHour % 12 || 12;
-            const minutes12 = String(ausMinute).padStart(2, '0');
-            const ampm = ausPeriod || (ausHour >= 12 ? 'PM' : 'AM');
-            
-            return `${hours12}:${minutes12} ${ampm}`;
         } catch (error) {
-            console.error('Error converting time:', error);
-            // Fallback: return the time as-is with AM/PM
-            const [hours, minutes] = time.split(':').map(Number);
-            const hours12 = hours % 12 || 12;
-            const minutes12 = String(minutes).padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            return `${hours12}:${minutes12} ${ampm}`;
+            console.error('Error converting time to Australia timezone:', error);
         }
-    };
 
-    // Format time in AM/PM
-    const formatTimeAMPM = (timeString) => {
-        if (!timeString) return '';
-        const [hours, minutes] = timeString.split(':').map(Number);
-        const hours12 = hours % 12 || 12;
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
+        // Fallback: return the time as-is with AM/PM formatting
+        return formatTimeAMPM(time);
     };
 
 
@@ -169,10 +250,22 @@ export default function BookingPage() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData(prev => {
+            const updated = {
+                ...prev,
+                [name]: value,
+            };
+
+            if (name === 'preferredDate') {
+                updated.preferredTime = '';
+            }
+
+            return updated;
+        });
+
+        if (name === 'preferredDate') {
+            setSelectedTimeOption(null);
+        }
     };
 
     const handleSessionTypeChange = (selectedOption) => {
@@ -190,6 +283,15 @@ export default function BookingPage() {
             timezone: selectedCountry?.timezone || '',
             preferredTime: '', // Reset time when country changes
         }));
+        setSelectedTimeOption(null);
+    };
+
+    const handlePreferredTimeSelect = (option) => {
+        setSelectedTimeOption(option);
+        setFormData(prev => ({
+            ...prev,
+            preferredTime: option?.userTime?.twentyFour || '',
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -202,7 +304,7 @@ export default function BookingPage() {
         }
 
         // Validate time is selected
-        if (!formData.preferredTime) {
+        if (!selectedTimeOption || !formData.preferredTime) {
             alert('Please select a preferred time');
             return;
         }
@@ -229,14 +331,21 @@ export default function BookingPage() {
             preferredDate: formData.preferredDate,
             preferredTime: formData.preferredTime,
             userTimezone: userTimezone,
-            userTime: formatTimeAMPM(formData.preferredTime),
+            userTime: selectedTimeOption?.userTime?.amPm || formatTimeAMPM(formData.preferredTime),
+            userTimeDetail: selectedTimeOption?.userTime || null,
             australiaTime: australiaTime,
-            australiaTimezone: 'Australia/Brisbane',
+            australiaTimezone: BRISBANE_TIMEZONE,
+            brisbaneSlot: selectedTimeOption ? {
+                day: selectedTimeOption.brisbaneDay,
+                time: selectedTimeOption.brisbaneLabel,
+                timeValue: selectedTimeOption.brisbaneTime,
+                dateLabel: selectedTimeOption.brisbaneDateLabel,
+            } : null,
             message: formData.message,
         };
 
         setIsLoading(true);
-        
+
         try {
             // Send booking data to API
             const response = await fetch('/api/booking', {
@@ -256,10 +365,11 @@ export default function BookingPage() {
             // Success - show success message
             setIsSubmitted(true);
             setIsLoading(false);
-            
+
             // Reset form after 3 seconds
             setTimeout(() => {
                 setIsSubmitted(false);
+                setSelectedTimeOption(null);
                 setFormData({
                     fullName: '',
                     email: '',
@@ -280,41 +390,86 @@ export default function BookingPage() {
         }
     };
 
-    const readingOptions = [
-        {
-            title: 'Psychic Reading ',
-            value: '30-min-psychic',
-            duration: '30 minutes',
-            description: 'Focused guidance on your current challenges and questions',
-            price: '$80 AUD',
-            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9qunkBxRo910byKfepAWMI45wBLUOcJFxh3lG',
-        },
-        {
-            title: 'Psychic Reading',
-            value: '60-min-psychic',
-            duration: '60 minutes',
-            description: 'Full intuitive reading + emotional support and deeper exploration',
-            price: '$150 AUD',
-            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9CVAlTmEYPpn5hrM0D8gUdc17Ooyl6fZaCvjW',
-        },
-        {
-            title: 'Spiritual Counselling',
-            value: '60-min-counselling',
-            duration: '60 minutes',
-            description: 'A safe space to speak openly and be heard. No tarot cards or predictions',
-            price: '$140 AUD',
-            image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9jOqvwAUmDqtyS0rVoKQbgTLw4FIcUu7deiz3',
-        },
-    ];
-
-
     const sessionTypeOptions = useMemo(() => {
-        return readingOptions ? readingOptions.map((option, index) => ({
+        return READING_OPTIONS.map((option, index) => ({
             key: index,
             value: option.value,
             label: option.title + ' - ' + option.duration,
-        })) : [];
-    }, [readingOptions]);
+        }));
+    }, []);
+
+    const availableTimeOptions = useMemo(() => {
+        if (!formData.preferredDate) return [];
+
+        const brisbaneDay = getWeekdayInTimezone(formData.preferredDate, BRISBANE_TIMEZONE);
+        const availabilityWindows = brisbaneDay ? AVAILABILITY_SCHEDULE[brisbaneDay] || [] : [];
+
+        if (!brisbaneDay || availabilityWindows.length === 0) {
+            return [];
+        }
+
+        const brisbaneDateLabel = formatDateInTimezone(formData.preferredDate, BRISBANE_TIMEZONE);
+
+        return availabilityWindows.flatMap(window => {
+            const slots = generateTimeSlots(window.start, window.end);
+
+            return slots.map(slot => {
+                const conversion = formData.timezone
+                    ? convertTimeBetweenTimezones(formData.preferredDate, slot, BRISBANE_TIMEZONE, formData.timezone)
+                    : null;
+
+                const userTimeTwentyFour = conversion?.twentyFour || slot;
+                const userAmPm = conversion?.amPm || formatTimeAMPM(slot);
+                const userDisplayDate = conversion?.displayDate || '';
+                const userIsoDate = conversion?.isoDate || formData.preferredDate;
+                const optionValue = `${formData.preferredDate || 'date'}|${brisbaneDay}|${slot}|${userTimeTwentyFour}`;
+
+                return {
+                    value: optionValue,
+                    label: conversion
+                        ? `${brisbaneDateLabel} • ${formatTimeAMPM(slot)} (Brisbane) — ${conversion.displayDate} • ${conversion.amPm} (${formData.timezone})`
+                        : `${brisbaneDateLabel} • ${formatTimeAMPM(slot)} (Brisbane time)`,
+                    brisbaneTime: slot,
+                    brisbaneLabel: formatTimeAMPM(slot),
+                    brisbaneDay,
+                    brisbaneDateLabel,
+                    userTime: {
+                        twentyFour: userTimeTwentyFour,
+                        amPm: userAmPm,
+                        displayDate: userDisplayDate,
+                        isoDate: userIsoDate,
+                        timezone: formData.timezone || BRISBANE_TIMEZONE,
+                    },
+                };
+            });
+        });
+    }, [formData.preferredDate, formData.timezone]);
+
+    useEffect(() => {
+        if (!selectedTimeOption) return;
+
+        const matched = availableTimeOptions.find(option => option.value === selectedTimeOption.value);
+
+        if (!matched) {
+            setSelectedTimeOption(null);
+            setFormData(prev => ({
+                ...prev,
+                preferredTime: '',
+            }));
+            return;
+        }
+
+        if (matched !== selectedTimeOption) {
+            setSelectedTimeOption(matched);
+        }
+
+        if (matched.userTime?.twentyFour && matched.userTime.twentyFour !== formData.preferredTime) {
+            setFormData(prev => ({
+                ...prev,
+                preferredTime: matched.userTime.twentyFour,
+            }));
+        }
+    }, [availableTimeOptions, selectedTimeOption, formData.preferredTime]);
 
     const faqs = [
         {
@@ -366,7 +521,7 @@ export default function BookingPage() {
                                 Book Your Reading
                             </h1>
                             <p className="text-lg sm:text-xl text-gray-600">
-                                Sessions are offered via phone call.
+                                Sessions are offered via phone call within Australia, or by WhatsApp audio call for international clients.
                                 <br />
                                 Please choose the option that feels right for you.
                             </p>
@@ -378,7 +533,7 @@ export default function BookingPage() {
                 <section className="py-20 bg-peach">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
-                            {readingOptions.map((option, index) => (
+                            {READING_OPTIONS.map((option, index) => (
                                 <motion.div
                                     key={index}
                                     initial={{ opacity: 0, y: 50 }}
@@ -404,7 +559,7 @@ export default function BookingPage() {
                                             <span className="text-[#3db99b] font-semibold text-lg inline-block mt-2">{option.price}</span>
                                         </div>
                                         <div className="mb-4">
-                                            <span className="inline-block bg-[#9FD3C7]/20 text-[#3db99b] border border-[#9FD3C7]/30 px-3 py-1 rounded-full text-sm font-medium">
+                                            <span className="inline-block bg-mint/20 text-[#3db99b] border border-mint/30 px-3 py-1 rounded-full text-sm font-medium">
                                                 {option.duration}
                                             </span>
                                         </div>
@@ -429,7 +584,7 @@ export default function BookingPage() {
                             viewport={{ once: true, margin: '-100px' }}
                             transition={{ duration: 0.8 }}
                             id="booking-form"
-                            className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-[#9FD3C7]/30"
+                            className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-mint/30"
                         >
                             <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
                                 Booking Form
@@ -441,7 +596,7 @@ export default function BookingPage() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     className="text-center py-12"
                                 >
-                                    <div className="w-16 h-16 bg-[#9FD3C7]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div className="w-16 h-16 bg-mint/20 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <svg className="w-8 h-8 text-[#3db99b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
@@ -464,7 +619,7 @@ export default function BookingPage() {
                                             required
                                             value={formData.fullName}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mint focus:border-mint transition-all"
                                         />
                                     </div>
 
@@ -479,7 +634,7 @@ export default function BookingPage() {
                                             required
                                             value={formData.email}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mint focus:border-mint transition-all"
                                         />
                                     </div>
 
@@ -494,7 +649,7 @@ export default function BookingPage() {
                                             required
                                             value={formData.phone}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mint focus:border-mint transition-all"
                                         />
                                     </div>
 
@@ -571,7 +726,7 @@ export default function BookingPage() {
                                                 required
                                                 value={formData.preferredDate}
                                                 onChange={handleInputChange}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mint focus:border-mint transition-all"
                                             />
                                         </div>
 
@@ -580,15 +735,66 @@ export default function BookingPage() {
                                                 Preferred Time {formData.country && formData.timezone && `(${formData.timezone})`} *
                                             </label>
                                             {formData.country ? (
-                                                <input
-                                                    type="time"
-                                                    id="preferredTime"
-                                                    name="preferredTime"
-                                                    required
-                                                    value={formData.preferredTime}
-                                                    onChange={handleInputChange}
-                                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
-                                                />
+                                                formData.preferredDate ? (
+                                                    availableTimeOptions.length > 0 ? (
+                                                        <Select
+                                                            id="preferredTime"
+                                                            name="preferredTime"
+                                                            value={selectedTimeOption || null}
+                                                            onChange={handlePreferredTimeSelect}
+                                                            options={availableTimeOptions}
+                                                            placeholder="Select a time slot"
+                                                            className="react-select-container"
+                                                            classNamePrefix="react-select"
+                                                            isSearchable={false}
+                                                            noOptionsMessage={() => 'No sessions available for this day'}
+                                                            isDisabled={availableTimeOptions.length === 0}
+                                                            formatOptionLabel={(option) => (
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-gray-800 font-medium">
+                                                                        Brisbane (AEST): {option.brisbaneDateLabel ? `${option.brisbaneDateLabel} • ${option.brisbaneLabel}` : option.brisbaneLabel}
+                                                                    </span>
+                                                                    {option.userTime?.displayDate && (
+                                                                        <span className="text-xs text-gray-500">
+                                                                            Your local time: {option.userTime.displayDate} • {option.userTime.amPm}{option.userTime.timezone ? ` (${option.userTime.timezone})` : ''}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                            styles={{
+                                                                control: (base, state) => ({
+                                                                    ...base,
+                                                                    minHeight: '48px',
+                                                                    borderColor: state.isFocused ? '#9FD3C7' : '#d1d5db',
+                                                                    boxShadow: 'none',
+                                                                    '&:hover': {
+                                                                        borderColor: '#9FD3C7',
+                                                                    },
+                                                                }),
+                                                                option: (base, state) => ({
+                                                                    ...base,
+                                                                    backgroundColor: state.isSelected
+                                                                        ? '#9FD3C7'
+                                                                        : state.isFocused
+                                                                            ? '#9FD3C7/20'
+                                                                            : 'white',
+                                                                    color: state.isSelected ? 'white' : '#1f2937',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#9FD3C7/30',
+                                                                    },
+                                                                }),
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500">
+                                                            No sessions are available on the selected date. Please choose Thursday, Friday, or Sunday (Brisbane time).
+                                                        </div>
+                                                    )
+                                                ) : (
+                                                    <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500">
+                                                        Please select a date first
+                                                    </div>
+                                                )
                                             ) : (
                                                 <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-400">
                                                     Please select a country first
@@ -601,13 +807,13 @@ export default function BookingPage() {
                                         <label htmlFor="contactMethod" className="block text-sm font-medium text-gray-700 mb-2">
                                             Video or Phone *
                                         </label>
-                                        <select
+                                       <select
                                             id="contactMethod"
                                             name="contactMethod"
                                             required
                                             value={formData.contactMethod}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9FD3C7] focus:border-[#9FD3C7] transition-all"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mint focus:border-mint transition-all"
                                         >
                                             <option value="">Select contact method</option>
                                             <option value="video">Video Call</option>
@@ -640,11 +846,10 @@ export default function BookingPage() {
                                         disabled={isLoading}
                                         whileHover={!isLoading ? { scale: 1.05 } : {}}
                                         whileTap={!isLoading ? { scale: 0.95 } : {}}
-                                        className={`w-full px-8 py-4 rounded-full font-semibold text-lg shadow-lg transition-all flex items-center justify-center gap-3 ${
-                                            isLoading
-                                                ? 'bg-[#28c09a]/70 text-white cursor-not-allowed'
-                                                : 'bg-[#28c09a] text-white cursor-pointer hover:bg-[#28c09a] hover:shadow-xl'
-                                        }`}
+                                        className={`w-full px-8 py-4 rounded-full font-semibold text-lg shadow-lg transition-all flex items-center justify-center gap-3 ${isLoading
+                                            ? 'bg-[#28c09a]/70 text-white cursor-not-allowed'
+                                            : 'bg-[#28c09a] text-white cursor-pointer hover:bg-[#28c09a] hover:shadow-xl'
+                                            }`}
                                     >
                                         {isLoading ? (
                                             <>
@@ -702,7 +907,7 @@ export default function BookingPage() {
                                         whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ duration: 0.5, delay: index * 0.1 }}
-                                        className="bg-white p-6 rounded-xl shadow-md border border-[#9FD3C7]/30"
+                                        className="bg-white p-6 rounded-xl shadow-md border border-mint/30"
                                     >
                                         <h3 className="text-xl font-bold text-gray-800 mb-3">{faq.question}</h3>
                                         <p className="text-gray-600 leading-relaxed">{faq.answer}</p>

@@ -15,7 +15,10 @@ export async function POST(request) {
             preferredTime,
             userTimezone,
             userTime,
+            userTimeDetail,
             australiaTime,
+            australiaTimezone,
+            brisbaneSlot,
             message,
         } = body;
 
@@ -45,6 +48,14 @@ export async function POST(request) {
 
         const sessionLabel = sessionTypeLabels[sessionType] || sessionType;
         const countryName = country?.label || country || 'Not specified';
+        const userPreferredDisplay = userTimeDetail?.displayDate
+            ? `${userTimeDetail.displayDate} • ${userTimeDetail.amPm}`
+            : (userTime || preferredTime);
+        const userPreferredTimezoneLabel = userTimeDetail?.timezone || userTimezone || timezone || 'Client timezone';
+        const australiaTimezoneLabel = australiaTimezone || 'Australia/Brisbane';
+        const brisbaneDisplay = brisbaneSlot?.dateLabel
+            ? `${brisbaneSlot.dateLabel} • ${brisbaneSlot.time}`
+            : (australiaTime || 'Not calculated');
 
         // Email content
         const emailHtml = `
@@ -148,13 +159,13 @@ export async function POST(request) {
                 <div class="field">
                   <div class="field-label">Client's Preferred Time:</div>
                   <div class="field-value">
-                    <strong>${userTime || preferredTime}</strong> (${userTimezone || timezone || 'Client timezone'})
+                    <strong>${userPreferredDisplay}</strong> (${userPreferredTimezoneLabel})
                   </div>
                 </div>
                 <div class="field" style="border-bottom: none; margin-bottom: 0;">
                   <div class="field-label">Time in Australia/Queensland (Brisbane):</div>
                   <div class="field-value">
-                    <strong style="color: #3db99b; font-size: 18px;">${australiaTime || 'Not calculated'}</strong>
+                    <strong style="color: #3db99b; font-size: 18px;">${brisbaneDisplay}</strong> (${australiaTimezoneLabel})
                   </div>
                 </div>
               </div>
@@ -189,8 +200,8 @@ Client Information:
 Session Details:
 - Session Type: ${sessionLabel}
 - Preferred Date: ${preferredDate}
-- Client's Preferred Time: ${userTime || preferredTime} (${userTimezone || timezone || 'Client timezone'})
-- Time in Australia/Queensland (Brisbane): ${australiaTime || 'Not calculated'}
+- Client's Preferred Time: ${userPreferredDisplay} (${userPreferredTimezoneLabel})
+- Time in Australia/Queensland (Brisbane): ${brisbaneDisplay} (${australiaTimezoneLabel})
 
 ${message ? `Message / Questions:\n${message}\n` : ''}
 

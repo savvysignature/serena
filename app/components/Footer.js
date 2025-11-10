@@ -80,7 +80,7 @@ export default function Footer() {
               Email: <a href="mailto:psychicscapegoat@gmail.com" className="text-[#3db99b] hover:underline font-semibold">psychicscapegoat@gmail.com</a>
             </p>
             <p className="text-gray-600 text-base mb-4">
-            Available for readings or counselling sessions via phone call.
+              Sessions are offered via phone call within Australia, or by WhatsApp audio call for international clients.
             </p>
             {/* <p className="text-gray-600">
               Based in Queensland, Australia
