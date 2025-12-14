@@ -155,6 +155,15 @@ const convertTimeBetweenTimezones = (date, time, fromTimezone, toTimezone) => {
 
 const READING_OPTIONS = [
     {
+        title: 'Christmas Scapegoat Survival Guidance',
+        value: '20-min-christmas',
+        duration: '20 minutes',
+        description: 'Specialized guidance to help you navigate the holiday season with strength and clarity',
+        price: '$50 AUD',
+        image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9Css9kDbEYPpn5hrM0D8gUdc17Ooyl6fZaCvj',
+        availableDays: ['Sunday', 'Thursday', 'Friday'],
+    },
+    {
         title: 'Psychic Reading ',
         value: '30-min-psychic',
         duration: '30 minutes',
@@ -178,6 +187,7 @@ const READING_OPTIONS = [
         price: '$140 AUD',
         image: 'https://jvbt2klp0c.ufs.sh/f/Bki00QFJMYr9jOqvwAUmDqtyS0rVoKQbgTLw4FIcUu7deiz3',
     },
+
 ];
 
 export default function BookingPage() {
@@ -402,6 +412,13 @@ export default function BookingPage() {
         if (!formData.preferredDate) return [];
 
         const brisbaneDay = getWeekdayInTimezone(formData.preferredDate, BRISBANE_TIMEZONE);
+
+        // Check if selected session type has day restrictions
+        const selectedSession = READING_OPTIONS.find(opt => opt.value === formData.sessionType);
+        if (selectedSession?.availableDays && !selectedSession.availableDays.includes(brisbaneDay)) {
+            return [];
+        }
+
         const availabilityWindows = brisbaneDay ? AVAILABILITY_SCHEDULE[brisbaneDay] || [] : [];
 
         if (!brisbaneDay || availabilityWindows.length === 0) {
@@ -443,7 +460,7 @@ export default function BookingPage() {
                 };
             });
         });
-    }, [formData.preferredDate, formData.timezone]);
+    }, [formData.preferredDate, formData.timezone, formData.sessionType]);
 
     useEffect(() => {
         if (!selectedTimeOption) return;
@@ -532,7 +549,7 @@ export default function BookingPage() {
                 {/* Reading Options */}
                 <section className="py-20 bg-peach">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+                        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-16">
                             {READING_OPTIONS.map((option, index) => (
                                 <motion.div
                                     key={index}
@@ -543,12 +560,12 @@ export default function BookingPage() {
                                     whileHover={{ y: -10, scale: 1.02 }}
                                     className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-mint/30 group"
                                 >
-                                    <div className="relative h-60 overflow-hidden">
+                                    <div className="relative h-80 max-md:h-60 overflow-hidden">
                                         <Image
                                             src={option.image}
                                             alt={option.title}
                                             fill
-                                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                            className="object-cover object-top group-hover:scale-110 transition-transform duration-500"
                                             sizes="(max-width: 768px) 100vw, 50vw"
                                         />
                                         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
@@ -787,7 +804,9 @@ export default function BookingPage() {
                                                         />
                                                     ) : (
                                                         <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500">
-                                                            No sessions are available on the selected date. Please choose Thursday, Friday, or Sunday (Brisbane time).
+                                                            {formData.sessionType === '20-min-christmas'
+                                                                ? 'No sessions are available on the selected date. Christmas Scapegoat Survival Guidance is only available on Sunday, Thursday, or Friday (Brisbane time).'
+                                                                : 'No sessions are available on the selected date. Please choose Thursday, Friday, or Sunday (Brisbane time).'}
                                                         </div>
                                                     )
                                                 ) : (

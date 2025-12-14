@@ -30,7 +30,7 @@ export async function POST(request) {
             );
         }
 
-        // Create transporter for Gmail
+        
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -39,11 +39,12 @@ export async function POST(request) {
             },
         });
 
-        // Get session type label
+
         const sessionTypeLabels = {
             '30-min-psychic': 'Psychic Reading (30 minutes) - $80 AUD',
             '60-min-psychic': 'Psychic Reading (60 minutes) - $150 AUD',
             '60-min-counselling': 'Spiritual Counselling (60 minutes) - $140 AUD',
+            '20-min-christmas': 'Christmas Scapegoat Survival Guidance (20 minutes) - $50 AUD',
         };
 
         const sessionLabel = sessionTypeLabels[sessionType] || sessionType;
